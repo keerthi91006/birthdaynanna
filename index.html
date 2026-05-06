@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>For You ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: url("back.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    text-align: center;
+}
+
+/* DARK OVERLAY */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.screen {
+    display: none;
+    padding: 20px;
+}
+
+.active {
+    display: block;
+}
+
+/* KEYPAD */
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.keypad button {
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 50%;
+    border: none;
+    background: #007bff;
+    color: white;
+}
+
+/* BUTTON */
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 20px;
+    border: none;
+    background: #007bff;
+    color: white;
+}
+
+/* POPUP */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: #111;
+    padding: 20px;
+    border-radius: 15px;
+    transition: 0.5s;
+}
+
+.popup.show {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* IMAGE */
+img {
+    width: 250px;
+    border-radius: 15px;
+}
+
+/* FADE */
+.fade {
+    opacity: 0;
+    transition: 1s;
+}
+
+.show {
+    opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pinScreen" class="screen active">
+    <h2>Enter PIN 🔐</h2>
+    <div id="dots" style="font-size:30px; letter-spacing:10px;">⚪⚪⚪⚪</div>
+
+    <div class="keypad">
+        <button onclick="press(1)">1</button>
+        <button onclick="press(2)">2</button>
+        <button onclick="press(3)">3</button>
+
+        <button onclick="press(4)">4</button>
+        <button onclick="press(5)">5</button>
+        <button onclick="press(6)">6</button>
+
+        <button onclick="press(7)">7</button>
+        <button onclick="press(8)">8</button>
+        <button onclick="press(9)">9</button>
+
+        <button onclick="clearPin()">⌫</button>
+        <button onclick="press(0)">0</button>
+        <button disabled></button>
+    </div>
+
+    <p id="error" style="color:red;"></p>
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="popup">
+    <h2>Happy Birthday ❤️</h2>
+    <img src="girl.jpeg">
+    <br>
+    <button onclick="openSurprise()">Open Surprise 💌</button>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countScreen" class="screen">
+    <h1 id="countText"></h1>
+    <img id="cameraImg" src="camera.jpeg" style="display:none; width:120px;">
+</div>
+
+<!-- PHOTO -->
+<div id="photoScreen" class="screen">
+    <img src="him.jpeg">
+    <p>My favorite person ❤️</p>
+    <button onclick="showCake()">Cake 🎂</button>
+</div>
+
+<!-- CAKE -->
+<div id="cakeScreen" class="screen">
+    <h2>Make a wish 🎂</h2>
+
+    <img id="cakeImg" src="cake1.png">
+
+    <br>
+
+    <button id="blowBtn" onclick="blow()">Blow 💨</button>
+
+    <button id="surpriseBtn" onclick="showWish()" style="display:none;">
+        Surprise 🎁
+    </button>
+
+    <p id="wishText"></p>
+</div>
+
+<!-- FINAL -->
+<div id="finalScreen" class="screen">
+    <h2 class="fade" id="line1">Out of everyone...</h2>
+    <h2 class="fade" id="line2">I found you...</h2>
+    <h2 class="fade" id="line3">You became my home 💙</h2>
+
+    <h1 class="fade" id="bday">Happy Birthday Nanna ❤️</h1>
+
+    <img src="us.jpeg" class="fade" id="finalImg">
+
+    <p class="fade" id="msg">
+        I’m really lucky to have you in my life 💙 <br>
+        Stay with me always ❤️
+    </p>
+</div>
+
+<script>
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+/* PIN */
+let enteredPin = "";
+let correctPin = "2401"; // CHANGE
+
+function press(num) {
+    if (enteredPin.length < 4) {
+        enteredPin += num;
+        updateDots();
+    }
+
+    if (enteredPin.length === 4) {
+        setTimeout(checkPin, 300);
+    }
+}
+
+function clearPin() {
+    enteredPin = enteredPin.slice(0, -1);
+    updateDots();
+}
+
+function updateDots() {
+    let dots = "";
+    for (let i = 0; i < 4; i++) {
+        dots += i < enteredPin.length ? "●" : "⚪";
+    }
+    document.getElementById("dots").innerText = dots;
+}
+
+function checkPin() {
+    if (enteredPin === correctPin) {
+        document.getElementById("popup").classList.add("show");
+    } else {
+        document.getElementById("error").innerText = "thappu pin nanna 😜";
+        enteredPin = "";
+        updateDots();
+    }
+}
+
+/* OPEN */
+function openSurprise() {
+    document.getElementById("popup").style.display = "none";
+    showScreen("countScreen");
+    startCount();
+}
+
+/* COUNTDOWN */
+let count = ["1...", "2...", "3...", "Cheese 📸", "photo theestha navvu 😄"];
+let i = 0;
+
+function startCount() {
+    if (i < count.length) {
+        document.getElementById("countText").innerText = count[i];
+
+        if (count[i] === "photo theestha navvu 😄") {
+            document.getElementById("cameraImg").style.display = "block";
+        }
+
+        i++;
+        setTimeout(startCount, 1000);
+    } else {
+        setTimeout(() => {
+            showScreen("photoScreen");
+        }, 800);
+    }
+}
+
+/* CAKE */
+function showCake() {
+    showScreen("cakeScreen");
+}
+
+function blow() {
+    document.getElementById("cakeImg").src = "cake2.png";
+    document.getElementById("blowBtn").style.display = "none";
+    document.getElementById("surpriseBtn").style.display = "inline-block";
+}
+
+function showWish() {
+    document.getElementById("wishText").innerText =
+    "Make a wish... I already did ❤️";
+
+    setTimeout(showFinal, 2000);
+}
+
+/* FINAL */
+function showFinal() {
+    showScreen("finalScreen");
+
+    let ids = ["line1","line2","line3","bday","finalImg","msg"];
+    ids.forEach((id, index) => {
+        setTimeout(() => {
+            document.getElementById(id).classList.add("show");
+        }, index * 1000);
+    });
+}
+</script>
+
+</body>
+</html>
